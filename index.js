@@ -3,7 +3,6 @@ import {config} from "dotenv";
 import { HumanMessage, AIMessage , SystemMessage,  } from "@langchain/core/messages";
 import { createAgent } from "langchain";
 import { tool } from "@langchain/core/tools";
-import rl from "readline/promises"
 import * as z from "zod";
 import {tavily} from "@tavily/core"
 config();
@@ -26,10 +25,6 @@ const getLatestinformationTool = tool(
 })
 
 
-const readline=rl.createInterface({
-    input: process.stdin,
-    output: process.stdout
-})
 
 
 const model = new ChatMistralAI({
@@ -45,37 +40,17 @@ const messages = [ new SystemMessage(`You are a helpful assistant.
     today is ${new Date().toLocaleDateString()}`) 
 
 ];
-while (true) {
-    const userPrompt = await readline.question("User: ");
+export async function handleMessage(userPrompt) {
     messages.push(new HumanMessage(userPrompt));
 
-    // const stream = await model.stream(messages);
-    const stream = await agent.stream({
-    messages,
-    },
-    {
+    const stream = await agent.stream({ messages }, { streamMode: "messages", recursionLimit: 30 });
 
-    streamMode: "messages",
-    recursionLimit: 30,
-
-    }
-    );
-
-    
     let aiResponse = "";
-    // for await(const chunk of stream) {
-    //     process.stdout.write(chunk.text);
-    //     aiResponse += chunk.text;
-    // }
-    for await(const [chunk ]of stream) {
-        process.stdout.write(chunk.text);
+    for await (const [chunk] of stream) {
         aiResponse += chunk.text;
     }
-    messages.push(new AIMessage(aiResponse));
-    console.log("\n");
-   
-   
 
-  
+    messages.push(new AIMessage(aiResponse));
+    return aiResponse;
 }
 
