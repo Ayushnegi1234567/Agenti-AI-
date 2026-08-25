@@ -1,0 +1,148 @@
+:root {
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: #e5e7eb;
+  background: #0f172a;
+  line-height: 1.5;
+  font-weight: 400;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  margin: 0;
+  min-height: 100%;
+  height: 100%;
+}
+
+body {
+  background: linear-gradient(135deg, #0f172a 0%, #111827 50%, #1f2937 100%);
+}
+
+button, input {
+  font: inherit;
+}
+
+.app-shell {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.chat-window {
+  width: min(900px, 100%);
+  height: min(90vh, 900px);
+  background: rgba(15, 23, 42, 0.9);
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  border-radius: 20px;
+  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.45);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.chat-header {
+  border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+  padding: 16px 20px;
+  background: rgba(15, 23, 42, 0.7);
+}
+
+.chat-header h1 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.message-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.message-row {
+  display: flex;
+}
+
+.message-row.user {
+  justify-content: flex-end;
+}
+
+.message-bubble {
+  max-width: 75%;
+  padding: 12px 14px;
+  border-radius: 16px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.message-row.user .message-bubble {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: white;
+  border-bottom-right-radius: 6px;
+}
+
+.message-row.assistant .message-bubble {
+  background: rgba(30, 41, 59, 0.9);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  color: #e2e8f0;
+  border-bottom-left-radius: 6px;
+}
+
+.composer {
+  display: flex;
+  gap: 12px;
+  padding: 16px 20px 20px;
+  border-top: 1px solid rgba(148, 163, 184, 0.2);
+  background: rgba(15, 23, 42, 0.8);
+}
+
+.composer input {
+  flex: 1;
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  border-radius: 12px;
+  background: rgba(15, 23, 42, 0.7);
+  color: white;
+  padding: 12px 14px;
+  outline: none;
+}
+
+.composer input:focus {
+  border-color: rgba(96, 165, 250, 0.9);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+.composer button {
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  color: white;
+  font-weight: 600;
+  padding: 0 18px;
+  cursor: pointer;
+}
+
+.composer button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+@media (max-width: 640px) {
+  .app-shell {
+    padding: 12px;
+  }
+
+  .chat-window {
+    height: 100vh;
+    border-radius: 0;
+    width: 100%;
+  }
+
+  .message-bubble {
+    max-width: 90%;
+  }
+}
