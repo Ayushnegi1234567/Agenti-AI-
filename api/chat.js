@@ -1,7 +1,7 @@
 import { streamAgentResponse } from "../lib/agentService.js";
 
 export const config = {
-  runtime: "nodejs20.x",
+  runtime: "nodejs18.x",
 };
 
 export default async function handler(req, res) {
