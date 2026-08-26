@@ -1,18 +1,15 @@
-import express from "express";
-import cors from "cors";
-import { streamAgentResponse } from "./lib/agentService.js";
+import { streamAgentResponse } from "../lib/agentService.js";
 
-const app = express();
-const PORT = process.env.PORT || 3001;
+export const config = {
+  runtime: "nodejs18.x",
+};
 
-app.use(cors());
-app.use(express.json());
+export default async function handler(req, res) {
+  if (req.method !== "POST") {
+    res.status(405).json({ error: "Method not allowed." });
+    return;
+  }
 
-app.get("/api/health", (_req, res) => {
-  res.json({ status: "ok" });
-});
-
-app.post("/api/chat", async (req, res) => {
   const { message, history = [] } = req.body ?? {};
 
   if (!message || !String(message).trim()) {
@@ -20,15 +17,18 @@ app.post("/api/chat", async (req, res) => {
     return;
   }
 
-  res.setHeader("Content-Type", "text/event-stream");
+  res.setHeader("Content-Type", "text/event-stream; charset=utf-8");
   res.setHeader("Cache-Control", "no-cache, no-transform");
   res.setHeader("Connection", "keep-alive");
-  res.flushHeaders?.();
+  res.setHeader("X-Accel-Buffering", "no");
 
   try {
     let fullResponse = "";
 
-    for await (const chunk of streamAgentResponse({ userPrompt: String(message), history })) {
+    for await (const chunk of streamAgentResponse({
+      userPrompt: String(message),
+      history,
+    })) {
       fullResponse += chunk;
       res.write(`data: ${JSON.stringify({ type: "chunk", text: chunk })}\n\n`);
     }
@@ -44,8 +44,4 @@ app.post("/api/chat", async (req, res) => {
     );
     res.end();
   }
-});
-
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
-});
+}

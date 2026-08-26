@@ -1,7 +1,25 @@
 import { useEffect, useRef, useState } from "react";
 import "./styles.css";
 
-const BACKEND_URL = "http://localhost:3001";
+const getApiBaseUrl = () => {
+  const configuredUrl = import.meta.env.VITE_API_BASE_URL;
+
+  if (configuredUrl) {
+    return configuredUrl.replace(/\/$/, "");
+  }
+
+  if (typeof window === "undefined") {
+    return "";
+  }
+
+  if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
+    return "http://localhost:3001";
+  }
+
+  return window.location.origin;
+};
+
+const BACKEND_URL = getApiBaseUrl();
 
 function App() {
   const [messages, setMessages] = useState([
