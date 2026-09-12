@@ -3,8 +3,12 @@ import "./styles.css";
 
 const getApiBaseUrl = () => {
   const configuredUrl = import.meta.env.VITE_API_BASE_URL;
+  const isLocalPage = typeof window !== "undefined"
+    && (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1");
+  const isLocalConfiguredUrl = configuredUrl
+    && /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/i.test(configuredUrl);
 
-  if (configuredUrl) {
+  if (configuredUrl && (!isLocalConfiguredUrl || isLocalPage)) {
     return configuredUrl.replace(/\/$/, "");
   }
 
@@ -12,7 +16,7 @@ const getApiBaseUrl = () => {
     return "";
   }
 
-  if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
+  if (isLocalPage) {
     return "http://localhost:3001";
   }
 

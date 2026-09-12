@@ -1,9 +1,5 @@
 import { streamAgentResponse } from "../lib/agentService.js";
 
-export const config = {
-  runtime: "nodejs",
-};
-
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     res.status(405).json({ error: "Method not allowed." });
@@ -17,11 +13,6 @@ export default async function handler(req, res) {
     return;
   }
 
-  res.setHeader("Content-Type", "text/event-stream; charset=utf-8");
-  res.setHeader("Cache-Control", "no-cache, no-transform");
-  res.setHeader("Connection", "keep-alive");
-  res.setHeader("X-Accel-Buffering", "no");
-
   try {
     let fullResponse = "";
 
@@ -30,18 +21,13 @@ export default async function handler(req, res) {
       history,
     })) {
       fullResponse += chunk;
-      res.write(`data: ${JSON.stringify({ type: "chunk", text: chunk })}\n\n`);
     }
 
-    res.write(`data: ${JSON.stringify({ type: "done", text: fullResponse })}\n\n`);
-    res.end();
+    res.status(200).json({ type: "done", text: fullResponse });
   } catch (error) {
-    res.write(
-      `data: ${JSON.stringify({
-        type: "error",
-        text: error instanceof Error ? error.message : "Something went wrong.",
-      })}\n\n`
-    );
-    res.end();
+    res.status(500).json({
+      type: "error",
+      text: error instanceof Error ? error.message : "Something went wrong.",
+    });
   }
 }
