@@ -20,29 +20,19 @@ app.post("/api/chat", async (req, res) => {
     return;
   }
 
-  res.setHeader("Content-Type", "text/event-stream");
-  res.setHeader("Cache-Control", "no-cache, no-transform");
-  res.setHeader("Connection", "keep-alive");
-  res.flushHeaders?.();
-
   try {
     let fullResponse = "";
 
     for await (const chunk of streamAgentResponse({ userPrompt: String(message), history })) {
       fullResponse += chunk;
-      res.write(`data: ${JSON.stringify({ type: "chunk", text: chunk })}\n\n`);
     }
 
-    res.write(`data: ${JSON.stringify({ type: "done", text: fullResponse })}\n\n`);
-    res.end();
+    res.json({ type: "done", text: fullResponse });
   } catch (error) {
-    res.write(
-      `data: ${JSON.stringify({
-        type: "error",
-        text: error instanceof Error ? error.message : "Something went wrong.",
-      })}\n\n`
-    );
-    res.end();
+    res.status(500).json({
+      type: "error",
+      text: error instanceof Error ? error.message : "Something went wrong.",
+    });
   }
 });
 

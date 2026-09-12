@@ -1,11 +1,11 @@
-import { ChatMistralAI } from "@langchain/mistralai";
+import { ChatGroq } from "@langchain/groq";
 import {config} from "dotenv";
 import { HumanMessage, AIMessage , SystemMessage,  } from "@langchain/core/messages";
 import { createAgent } from "langchain";
 import { tool } from "@langchain/core/tools";
 import * as z from "zod";
 import {tavily} from "@tavily/core"
-config();
+config({ override: true });
 
 const tvly = tavily({ apiKey: process.env.TAVILY_API_KEY });
 async function getLatestinformation({query}) {
@@ -27,9 +27,12 @@ const getLatestinformationTool = tool(
 
 
 
-const model = new ChatMistralAI({
-    model:"mistral-small-latest",
-    apiKey: process.env.MISTRAL_AI_API_KEY
+const model = new ChatGroq({
+    model:"qwen/qwen3.6-27b",
+    apiKey: process.env.GROQ_API_KEY,
+    maxTokens: 256,
+    reasoningFormat: "hidden",
+    reasoningEffort: "none"
 })
 const agent=createAgent({
     model,
@@ -53,4 +56,3 @@ export async function handleMessage(userPrompt) {
     messages.push(new AIMessage(aiResponse));
     return aiResponse;
 }
-
